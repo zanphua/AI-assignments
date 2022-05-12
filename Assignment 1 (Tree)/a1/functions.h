@@ -69,8 +69,6 @@ namespace AI
         
 
         // Deserialization
-
-        //"a {1 aa {1 aaa {0 } } }"
         friend std::istream& operator>>(std::istream& is, Node& rhs)
         {
             std::istreambuf_iterator<char> item;
@@ -129,7 +127,16 @@ namespace AI
         std::vector<T> getPath() const
         {
             std::vector<T> r;
-            // ...
+            r.emplace_back(this->value);
+
+            auto* node = this->parent;
+
+            while (node)
+            {
+                r.emplace_back(node->value);
+                node = node->parent;
+            }
+
             return r;
         }
     };
@@ -138,9 +145,27 @@ namespace AI
     template<typename T>
     Node<T>* BFS(Node<T> & node, const T & lookingfor)
     {
-        UNUSED(node)
-        UNUSED(lookingfor)
-        // ...
+        std::queue<Node<T>>openlist;   //create empty queue
+        openlist.push(node);    //push root node into queue
+
+        while (!openlist.empty())   //while queue is not empty
+        {
+            Node<T> current = openlist.front(); //get the first item in the queue
+             
+            openlist.pop(); //remove the visited item from the queue
+
+            if (current.value == lookingfor)    //if its what we are looking for
+            {
+                node = current;
+                return &node; //return that node
+            }
+
+            for (auto child : current.children) //if item not found, 
+            {
+                openlist.push(*child);//push in all children of the current visited node
+            }
+        }
+
         return nullptr;
     }
 
@@ -148,9 +173,25 @@ namespace AI
     template<typename T>
     Node<T>* DFS(Node<T> & node, const T & lookingfor)
     {
-        UNUSED(node)
-        UNUSED(lookingfor)
-        // ...
+        std::stack< Node<T> >openlist;
+        openlist.push(node);
+
+        while (!openlist.empty())
+        {
+            auto current = openlist.top();
+            openlist.pop();
+
+            if (current.value == lookingfor)
+            {
+                node = current;
+                return &node;
+            }
+
+            for (auto child : current.children)
+            {
+                openlist.push(*child);
+            }
+        }
         return nullptr;
     }
 
