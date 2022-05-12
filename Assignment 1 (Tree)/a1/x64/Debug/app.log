@@ -1,0 +1,14 @@
+﻿  functions.cpp
+  main.cpp
+C:\Users\zanph\Downloads\Assignment 1 (Tree)\a1\functions.h(97,44): error C2355: 'this': can only be referenced inside non-static member functions or non-static data member initializers
+C:\Users\zanph\Downloads\Assignment 1 (Tree)\a1\functions.h(74): message : while compiling class template member function 'std::istream &AI::operator >>(std::istream &,AI::Node<std::string> &)'
+C:\Users\zanph\Downloads\Assignment 1 (Tree)\a1\main.cpp(78): message : see reference to function template instantiation 'std::istream &AI::operator >>(std::istream &,AI::Node<std::string> &)' being compiled
+C:\Users\zanph\Downloads\Assignment 1 (Tree)\a1\main.cpp(73): message : see reference to class template instantiation 'AI::Node<std::string>' being compiled
+C:\Users\zanph\Downloads\Assignment 1 (Tree)\a1\functions.h(98,1): error C2678: binary '<<': no operator found which takes a left-hand operand of type 'std::string' (or there is no acceptable conversion)
+C:\Users\zanph\Downloads\Assignment 1 (Tree)\a1\functions.h(45,30): message : could be 'std::ostream &AI::Node<std::string>::operator <<(std::ostream &,const AI::Node<std::string> &)' [found using argument-dependent lookup]
+C:\Users\zanph\Downloads\Assignment 1 (Tree)\a1\functions.h(98,1): message : while trying to match the argument list '(std::string, AI::Node<std::string>)'
+C:\Users\zanph\Downloads\Assignment 1 (Tree)\a1\functions.h(107,1): error C2679: binary '=': no operator found which takes a right-hand operand of type 'std::string' (or there is no acceptable conversion)
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.27.29110\include\istream(70,39): message : could be 'std::basic_istream<char,std::char_traits<char>> &std::basic_istream<char,std::char_traits<char>>::operator =(const std::basic_istream<char,std::char_traits<char>> &)'
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.27.29110\include\istream(58,39): message : or       'std::basic_istream<char,std::char_traits<char>> &std::basic_istream<char,std::char_traits<char>>::operator =(std::basic_istream<char,std::char_traits<char>> &&)'
+C:\Users\zanph\Downloads\Assignment 1 (Tree)\a1\functions.h(107,1): message : while trying to match the argument list '(std::istream, std::string)'
+  Generating Code...
