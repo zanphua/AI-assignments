@@ -43,6 +43,19 @@ namespace AI
                 delete child;
         }     
 
+//"a {3 aa {3 aaa {0 } aab {0 } ooo {0 } } ooo {3 aba {0 } abb {0 } abc {0 } } ac {3 aca {0 } ooo {0 } acc {0 } } } "
+
+/*
+                a
+
+        aa,     ooo,    ac
+
+aaa aab ooo, aba abb abc, aca ooo acc
+
+*/
+
+
+
         // Serialization
         friend std::ostream& operator<<(std::ostream& os, Node const& rhs)
         {
@@ -64,6 +77,8 @@ namespace AI
 
             temp += "} ";    //"a{0 }"
             os << temp;
+            std::cout << "test string serialization: \n" << temp << "\n";
+
             return os;
         }
         
@@ -119,6 +134,8 @@ namespace AI
 
             n = input.find('}');
             if (n == std::string::npos) return is;//if } not found return
+
+            //std::cout << "test string deserialization: \n" << input << "\n";
 
             return is;
         }
