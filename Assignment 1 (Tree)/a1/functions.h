@@ -10,6 +10,8 @@
 #include <stack>
 #include <algorithm>
 
+#include <math.h>
+
 #include "data.h"
 
 namespace AI 
@@ -64,7 +66,6 @@ namespace AI
             os << temp;
             return os;
         }
-
         
 
         // Deserialization
@@ -72,12 +73,10 @@ namespace AI
         //"a {1 aa {1 aaa {0 } } }"
         friend std::istream& operator>>(std::istream& is, Node& rhs)
         {
-            is >> rhs.value; // Just for test, you can change it
-            
-            std::string input = rhs.value;  //store value into temp variable
+            std::istreambuf_iterator<char> item;
+            std::string input(std::istreambuf_iterator<char>(is), item);    //retrieving input string
 
             size_t n = input.find_first_of(' ');    //find space
-
             if (n == std::string::npos) return is;//if space not found return
                 
             rhs.value = input.substr(0, n); //get substr (first object)
@@ -86,25 +85,42 @@ namespace AI
 
             if (input[0] != '{') return is; //if no more child, return
 
-            size_t x = input.find(' '); //find next space
+            input = input.substr(1, std::string::npos); //splice {
 
-            if(x == std::string::npos) return is;//if space not found return
+            n = input.find(' '); //find next space
+            if(n == std::string::npos) return is;//if space not found return
 
-            int len = stoi(input.substr(0, x)); //get length of substr remaining
+            int len = stoi(input.substr(0, n)); //get length of substr remaining
 
-            for (int i{ 0 }; i < len; ++i)
+            if (isnan(static_cast<float>(len)))  return is; //if number not found, return
+
+            if (len > 0)
             {
-                Node* child = new Node("", this);
-                input << *child;
-                rhs.children.push_back(child);
+                input = input.substr(n + 1, std::string::npos);
+            }
+            else
+            {
+                input = input.substr(n + 3, std::string::npos);
             }
 
-            size_t y = input.find('}');
-            if(y == std::string::npos) return is;//if } not found return
+            for (int i{ 0 }; i < len; ++i)  //loop for each child
+            {
+                Node<std::string>* child = new Node();
+                child->parent = &rhs;
 
-            input = input.substr(n + 1, std::string::npos);
+                std::istringstream current{ input };
+                current >> *child;
 
-            is = input;
+                rhs.children.emplace_back(child);
+
+                n = input.find('}');
+                if (n == std::string::npos) return is;//if } not found return
+
+                input = input.substr(n + 2, std::string::npos);
+            }
+
+            n = input.find('}');
+            if (n == std::string::npos) return is;//if } not found return
 
             return is;
         }
