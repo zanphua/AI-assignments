@@ -77,7 +77,8 @@ aaa aab ooo, aba abb abc, aca ooo acc
 
             temp += "} ";    //"a{0 }"
             os << temp;
-            std::cout << "test string serialization: \n" << temp << "\n";
+
+            //std::cout << "test string serialization: \n" << temp << "\n";
 
             return os;
         }
@@ -89,32 +90,48 @@ aaa aab ooo, aba abb abc, aca ooo acc
             std::istreambuf_iterator<char> item;
             std::string input(std::istreambuf_iterator<char>(is), item);    //retrieving input string
 
+            //std::cout << "input: " << input << "\n";
+
             size_t n = input.find_first_of(' ');    //find space
             if (n == std::string::npos) return is;//if space not found return
+
+            //std::cout << "first find space at :" << n << "\n";
                 
             rhs.value = input.substr(0, n); //get substr (first object)
 
+            //std::cout << "first substr: " << rhs.value << "\n";
+
             input = input.substr(n + 1, std::string::npos); //get remaining string
+
+            //std::cout << "remaining substr: " << input << "\n";
 
             if (input[0] != '{') return is; //if no more child, return
 
             input = input.substr(1, std::string::npos); //splice {
+
+            //std::cout << "splice { : " << input << "\n";
 
             n = input.find(' '); //find next space
             if(n == std::string::npos) return is;//if space not found return
 
             int len = stoi(input.substr(0, n)); //get length of substr remaining
 
+            //std::cout << "number of children: " << len << "\n";
+
             if (isnan(static_cast<float>(len)))  return is; //if number not found, return
 
-            if (len > 0)
-            {
-                input = input.substr(n + 1, std::string::npos);
-            }
-            else
-            {
-                input = input.substr(n + 3, std::string::npos);
-            }
+            input = input.substr(n + 1, std::string::npos);
+            //if (len > 0)    //if there are children
+            //{
+            //    input = input.substr(n + 1, std::string::npos);
+            //    //input = input.substr(n + 3, std::string::npos);  
+            //}
+            //else            //if there are no children
+            //{
+            //    input = input.substr(n + 1, std::string::npos);
+            //}
+
+            //std::cout << "recent substr: " << input << "\n\n";
 
             for (int i{ 0 }; i < len; ++i)  //loop for each child
             {
@@ -130,10 +147,14 @@ aaa aab ooo, aba abb abc, aca ooo acc
                 if (n == std::string::npos) return is;//if } not found return
 
                 input = input.substr(n + 2, std::string::npos);
+                //std::cout << "second last substr: " << input << "\n";
             }
 
             n = input.find('}');
             if (n == std::string::npos) return is;//if } not found return
+
+            input = input.substr(n + 1, std::string::npos);
+            //std::cout << "final substr: " << input << "\n\n";
 
             //std::cout << "test string deserialization: \n" << input << "\n";
 
@@ -144,9 +165,15 @@ aaa aab ooo, aba abb abc, aca ooo acc
         std::vector<T> getPath() const
         {
             std::vector<T> r;
+
+           /* if (this == nullptr)
+            {
+                return r;
+            }*/
+
             r.emplace_back(this->value);
 
-            auto* node = this->parent;
+            Node* node = this->parent;
 
             while (node)
             {
@@ -162,24 +189,24 @@ aaa aab ooo, aba abb abc, aca ooo acc
     template<typename T>
     Node<T>* BFS(Node<T> & node, const T & lookingfor)
     {
-        std::queue<Node<T>>openlist;   //create empty queue
-        openlist.push(node);    //push root node into queue
+        std::queue<Node<T>*>openlist;   //create empty queue
+        openlist.push(&node);    //push root node into queue
 
         while (!openlist.empty())   //while queue is not empty
         {
-            Node<T> current = openlist.front(); //get the first item in the queue
+            Node<T>* current = openlist.front(); //get the first item in the queue
              
             openlist.pop(); //remove the visited item from the queue
 
-            if (current.value == lookingfor)    //if its what we are looking for
+            if (current->value == lookingfor)    //if its what we are looking for
             {
-                node = current;
+                node = *current;
                 return &node; //return that node
             }
 
-            for (auto child : current.children) //if item not found, 
+            for (Node<T>* child : current->children) //if item not found, 
             {
-                openlist.push(*child);//push in all children of the current visited node
+                openlist.push(child);//push in all children of the current visited node
             }
         }
 
@@ -190,23 +217,23 @@ aaa aab ooo, aba abb abc, aca ooo acc
     template<typename T>
     Node<T>* DFS(Node<T> & node, const T & lookingfor)
     {
-        std::stack< Node<T> >openlist;
-        openlist.push(node);
+        std::stack< Node<T>* >openlist;
+        openlist.push(&node);
 
         while (!openlist.empty())
         {
-            auto current = openlist.top();
+            Node<T>* current = openlist.top();
             openlist.pop();
 
-            if (current.value == lookingfor)
+            if (current->value == lookingfor)
             {
-                node = current;
+                node = *current;
                 return &node;
             }
 
-            for (auto child : current.children)
+            for (Node<T>* child : current->children)
             {
-                openlist.push(*child);
+                openlist.push(child);
             }
         }
         return nullptr;
