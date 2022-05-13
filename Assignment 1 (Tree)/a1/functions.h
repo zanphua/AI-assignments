@@ -43,19 +43,6 @@ namespace AI
                 delete child;
         }     
 
-//"a {3 aa {3 aaa {0 } aab {0 } ooo {0 } } ooo {3 aba {0 } abb {0 } abc {0 } } ac {3 aca {0 } ooo {0 } acc {0 } } } "
-
-/*
-                a
-
-        aa,     ooo,    ac
-
-aaa aab ooo, aba abb abc, aca ooo acc
-
-*/
-
-
-
         // Serialization
         friend std::ostream& operator<<(std::ostream& os, Node const& rhs)
         {
@@ -99,7 +86,7 @@ aaa aab ooo, aba abb abc, aca ooo acc
                 
             rhs.value = input.substr(0, n); //get substr (first object)
 
-            std::cout << "first substr: " << rhs.value << "\"\n";
+            //std::cout << "first substr: " << rhs.value << "\"\n";
 
             input = input.substr(n + 1, std::string::npos); //get remaining string
 
@@ -137,7 +124,7 @@ aaa aab ooo, aba abb abc, aca ooo acc
                 size_t noc = input.find_first_of("1234567890");
                 int num = stoi(input.substr(noc, 1));
 
-                std::cout << "number of children: " << num << "\n";
+                //std::cout << "number of children: " << num << "\n";
                 if (num > 0)
                 {
                     size_t temp = num + 1;
@@ -150,7 +137,7 @@ aaa aab ooo, aba abb abc, aca ooo acc
 
                     input = input.substr(x + 2, std::string::npos);
 
-                    std::cout << "substr 1: " << input << "\n";
+                    //std::cout << "substr 1: " << input << "\n";
                 }
                 else
                 {
@@ -158,7 +145,7 @@ aaa aab ooo, aba abb abc, aca ooo acc
                     if (n == std::string::npos) return is;//if } not found return
                     input = input.substr(n + 2, std::string::npos);
 
-                    std::cout << "substr 2: " << input << "\n";
+                    //std::cout << "substr 2: " << input << "\n";
                 }
                 
                 //std::cout << "second last substr: " << input << "\n";
@@ -181,13 +168,14 @@ aaa aab ooo, aba abb abc, aca ooo acc
             r.insert(r.begin(), this->value);
 
             Node<T>* node = this->parent;
-            //(void)node;
+
             while (node)
             {
                 r.insert(r.begin(), node->value);
-                node = node->parent;
 
-                std::cout << "node val: " << node->value << "\n";
+                //std::cout << "parent value: " << node->parent->value << "\n";
+
+                node = node->parent;
             }
 
             return r;
@@ -209,7 +197,6 @@ aaa aab ooo, aba abb abc, aca ooo acc
 
             if (current->value == lookingfor)    //if its what we are looking for
             {
-                //node = *current;
                 return current; //return that node
             }
 
@@ -236,8 +223,7 @@ aaa aab ooo, aba abb abc, aca ooo acc
 
             if (current->value == lookingfor)
             {
-                node = *current;
-                return &node;
+                return current;
             }
 
             for (Node<T>* child : current->children)
