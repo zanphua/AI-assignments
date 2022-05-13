@@ -99,7 +99,7 @@ aaa aab ooo, aba abb abc, aca ooo acc
                 
             rhs.value = input.substr(0, n); //get substr (first object)
 
-            //std::cout << "first substr: " << rhs.value << "\n";
+            std::cout << "first substr: " << rhs.value << "\"\n";
 
             input = input.substr(n + 1, std::string::npos); //get remaining string
 
@@ -121,15 +121,6 @@ aaa aab ooo, aba abb abc, aca ooo acc
             if (isnan(static_cast<float>(len)))  return is; //if number not found, return
 
             input = input.substr(n + 1, std::string::npos);
-            //if (len > 0)    //if there are children
-            //{
-            //    input = input.substr(n + 1, std::string::npos);
-            //    //input = input.substr(n + 3, std::string::npos);  
-            //}
-            //else            //if there are no children
-            //{
-            //    input = input.substr(n + 1, std::string::npos);
-            //}
 
             //std::cout << "recent substr: " << input << "\n\n";
 
@@ -143,20 +134,36 @@ aaa aab ooo, aba abb abc, aca ooo acc
 
                 rhs.children.emplace_back(child);
 
-                n = input.find('}');
-                if (n == std::string::npos) return is;//if } not found return
+                size_t noc = input.find_first_of("1234567890");
+                int num = stoi(input.substr(noc, 1));
 
-                input = input.substr(n + 2, std::string::npos);
+                std::cout << "number of children: " << num << "\n";
+                if (num > 0)
+                {
+                    size_t temp = num + 1;
+                    size_t x = 0;
+                    while (temp > 0)
+                    {
+                        x = input.find('}', x + 1);
+                        temp--;
+                    }
+
+                    input = input.substr(x + 2, std::string::npos);
+
+                    std::cout << "substr 1: " << input << "\n";
+                }
+                else
+                {
+                    n = input.find('}');
+                    if (n == std::string::npos) return is;//if } not found return
+                    input = input.substr(n + 2, std::string::npos);
+
+                    std::cout << "substr 2: " << input << "\n";
+                }
+                
                 //std::cout << "second last substr: " << input << "\n";
             }
 
-            n = input.find('}');
-            if (n == std::string::npos) return is;//if } not found return
-
-            input = input.substr(n + 1, std::string::npos);
-            //std::cout << "final substr: " << input << "\n\n";
-
-            //std::cout << "test string deserialization: \n" << input << "\n";
 
             return is;
         }
@@ -164,21 +171,23 @@ aaa aab ooo, aba abb abc, aca ooo acc
         // Returns values from root to this node as an array
         std::vector<T> getPath() const
         {
-            std::vector<T> r;
+            std::vector<T> r = std::vector<T>();
 
-           /* if (this == nullptr)
+            if (this == nullptr)
             {
                 return r;
-            }*/
+            }
 
-            r.emplace_back(this->value);
+            r.insert(r.begin(), this->value);
 
-            Node* node = this->parent;
-
+            Node<T>* node = this->parent;
+            //(void)node;
             while (node)
             {
-                r.emplace_back(node->value);
+                r.insert(r.begin(), node->value);
                 node = node->parent;
+
+                std::cout << "node val: " << node->value << "\n";
             }
 
             return r;
@@ -200,8 +209,8 @@ aaa aab ooo, aba abb abc, aca ooo acc
 
             if (current->value == lookingfor)    //if its what we are looking for
             {
-                node = *current;
-                return &node; //return that node
+                //node = *current;
+                return current; //return that node
             }
 
             for (Node<T>* child : current->children) //if item not found, 

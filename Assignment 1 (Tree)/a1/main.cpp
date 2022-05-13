@@ -171,8 +171,7 @@ void test6()
 
 void test7()
 {
-    //std::string string{ "a {3 aa {3 aaa {0 } aab {0 } ooo {0 } } ooo {3 aba {0 } abb {0 } abc {0 } } ac {3 aca {0 } ooo {0 } acc {0 } } } " };
-    std::string string{ "a {3 aa {0 } bb {0 } cc {0 } } " };
+    std::string string{ "a {3 aa {3 aaa {0 } aab {0 } ooo {0 } } ooo {3 aba {0 } abb {0 } abc {0 } } ac {3 aca {0 } ooo {0 } acc {0 } } } " };
     AI::Node<std::string> root;
 
     std::string lookingfor = "N";
@@ -188,10 +187,9 @@ void test7()
 
 void test8()
 {
-    //std::string string{ "a {3 aa {3 aaa {0 } aab {0 } ooo {0 } } ooo {3 aba {0 } abb {0 } abc {0 } } ac {3 aca {0 } ooo {0 } acc {0 } } } " };
-    std::string string{ "a {3 aa {0 } bb {0 } cc {0 } } " };
+    std::string string{ "a {3 aa {3 aaa {0 } aab {0 } ooo {0 } } ooo {3 aba {0 } abb {0 } abc {0 } } ac {3 aca {0 } ooo {0 } acc {0 } } } " };
 
-    std::string lookingfor = "bb";
+    std::string lookingfor = "ooo";
 
     AI::Node<std::string> root;
 
@@ -206,8 +204,7 @@ void test8()
 
 void test9()
 {
-    //std::string string{ "a {3 aa {3 aaa {0 } aab {0 } ooo {0 } } ooo {3 aba {0 } abb {0 } abc {0 } } ac {3 aca {0 } ooo {0 } acc {0 } } } " };
-    std::string string{ "a {3 aa {0 } bb {0 } cc {0 } } " };
+    std::string string{ "a {3 aa {3 aaa {0 } aab {0 } ooo {0 } } ooo {3 aba {0 } abb {0 } abc {0 } } ac {3 aca {0 } ooo {0 } acc {0 } } } " };
     
     AI::Node<std::string> root;
 
