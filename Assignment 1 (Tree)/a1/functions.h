@@ -1,3 +1,14 @@
+/*!*****************************************************************************
+\file functions.h
+\author Zandra Phua Si-Yu
+\par DP email: p.siyuzandra@digipen.edu
+\par Course: CSD3182
+\par Section: B
+\par Assignment 1 (Trees)
+\date 13-05-2021
+\brief
+This file has declarations and definitions that are required for submission
+*******************************************************************************/
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
@@ -17,8 +28,6 @@
 namespace AI 
 {
     #define UNUSED(expr) (void)expr;
-
-    
 
     // A simple graph node definition with serialization functions
     template<typename T>
@@ -43,7 +52,13 @@ namespace AI
                 delete child;
         }     
 
-        // Serialization
+        /*!*****************************************************************************
+        \brief Friend function for Serialization
+        \param std::ostream& os, output stream
+        \param Node const& rhs, Node object
+        
+        \return std::ostream&
+        *******************************************************************************/
         friend std::ostream& operator<<(std::ostream& os, Node const& rhs)
         {
             //os << rhs.value; // Just for test, you can change it
@@ -71,7 +86,13 @@ namespace AI
         }
         
 
-        // Deserialization
+        /*!*****************************************************************************
+        \brief Friend function for Deserialization
+        \param std::istream& is, input stream
+        \param Node& rhs, Node object
+
+        \return std::istream&
+        *******************************************************************************/
         friend std::istream& operator>>(std::istream& is, Node& rhs)
         {
             std::istreambuf_iterator<char> item;
@@ -151,19 +172,21 @@ namespace AI
                 //std::cout << "second last substr: " << input << "\n";
             }
 
-
             return is;
         }
 
-        // Returns values from root to this node as an array
+        /*!*****************************************************************************
+        /Brief   Returns values from root to this node as an array
+        /returns std::vector<T>, Vector of path to this node
+        *******************************************************************************/
         std::vector<T> getPath() const
         {
             std::vector<T> r = std::vector<T>();
 
-            if (this == nullptr)
-            {
-                return r;
-            }
+            // if (this == nullptr)
+            // {
+            //     return r;
+            // }
 
             r.insert(r.begin(), this->value);
 
@@ -182,7 +205,12 @@ namespace AI
         }
     };
 
-    // Implementation of the Breadth-First Search algorithm
+    /*!*****************************************************************************
+    /Brief      Implementation of the Breadth-First Search algorithm
+    /param      Node<T> & node, root node
+    /param      const T & lookingfor, node to search for
+    /returns    Node<T>*, Pointer to node object
+    *******************************************************************************/
     template<typename T>
     Node<T>* BFS(Node<T> & node, const T & lookingfor)
     {
@@ -209,7 +237,12 @@ namespace AI
         return nullptr;
     }
 
-    // Implementation of the Depth-First Search algorithm
+    /*!*****************************************************************************
+    /Brief      Implementation of the Depth-First Search algorithm
+    /param      Node<T> & node, root node
+    /param      const T & lookingfor, node to search for
+    /returns    Node<T>*, Pointer to node object
+    *******************************************************************************/
     template<typename T>
     Node<T>* DFS(Node<T> & node, const T & lookingfor)
     {
