@@ -3,6 +3,7 @@
 
 #include <stack>
 #include <algorithm>
+#include <random>
 
 #include "data.h"
 
@@ -73,13 +74,19 @@ namespace AI
 
         std::vector<AI::Node*> operator()(Key key)
         {
-            //UNUSED(key)
-            
             std::vector<AI::Node*> list = {};
             
             // Find and return all empty adjacent cells
             // Use the base class operator() and then shuffle the result
+            std::vector<AI::Node*> parent_list = GetMapAdjacents::operator()(key);
 
+            for (int i{ 0 }; i < parent_list.size(); ++i)
+            {
+                list.emplace_back(parent_list[i]);  //copy parent list into child list
+            }
+
+            auto rng = std::default_random_engine{};
+            std::shuffle(list.begin(), list.end(), rng);    //shuffle
 
             return list;
         }
