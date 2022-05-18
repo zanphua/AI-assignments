@@ -1,7 +1,19 @@
+/*!*****************************************************************************
+\file functions.h
+\author Zandra Phua Si-Yu
+\par DP email: p.siyuzandra@digipen.edu
+\par Course: CSD3182
+\par Section: B
+\par Assignment 2 (Flood Fill)
+\date 18-05-2021
+\brief
+This file has declarations and definitions that are required for submission
+*******************************************************************************/
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
 #include <stack>
+#include <queue>
 #include <algorithm>
 #include <random>
 
@@ -29,6 +41,14 @@ namespace AI
         {
         }
 
+        void setValue(Key k, int color)
+        {
+            int j = k.j;
+            int i = k.i;
+            this->map[j * this->size + i] = color;
+        }
+
+        
         std::vector<AI::Node*> operator()(Key key)
         {
             //init function variables
@@ -74,17 +94,12 @@ namespace AI
 
         std::vector<AI::Node*> operator()(Key key)
         {
-            std::vector<AI::Node*> list = {};
-            
+
             // Find and return all empty adjacent cells
-            // Use the base class operator() and then shuffle the result
-            std::vector<AI::Node*> parent_list = GetMapAdjacents::operator()(key);
-
-            for (int i{ 0 }; i < parent_list.size(); ++i)
-            {
-                list.emplace_back(parent_list[i]);  //copy parent list into child list
-            }
-
+            // Use the base class operator()
+            std::vector<AI::Node*> list = GetMapAdjacents::operator()(key);
+            
+            //shuffle the result
             auto rng = std::default_random_engine{};
             std::shuffle(list.begin(), list.end(), rng);    //shuffle
 
@@ -96,6 +111,8 @@ namespace AI
 
     struct Interface
     {
+        virtual bool empty() = 0;
+
         virtual void clear() = 0;
 
         virtual void push(Node* pNode) = 0;
@@ -105,42 +122,82 @@ namespace AI
 
     struct Queue : Interface //...
     {
+        std::queue<Node*> my_queue;
+
+        bool empty()
+        {
+            if (my_queue.empty())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         void clear()
         {
-            //...
+            while (!my_queue.empty())
+            {
+                my_queue.pop();
+            }
         }
 
         void push(Node* pNode)
         {
-           UNUSED(pNode)
-           //...
+            Node* new_node = new Node;
+            new_node->key.j = pNode->key.j;
+            new_node->key.i = pNode->key.i;
+
+            my_queue.push(new_node);
         }
 
         Node* pop()
         {
-            Node* pNode = nullptr;
-            //...
+            Node* pNode = my_queue.front();
+            
+            my_queue.pop();
+
             return pNode;
         }
     };
 
     struct Stack : Interface //...
     {
+        std::stack<Node*> my_stack{};
+
+        bool empty()
+        {
+            if (my_stack.empty())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         void clear()
         {
-            //...
+            while (!my_stack.empty())
+            {
+                my_stack.pop();
+            }
         }
 
         void push(Node* pNode)
         {
-            UNUSED(pNode)
-            //...
+            Node* new_node = new Node;
+            new_node->key.j = pNode->key.j;
+            new_node->key.i = pNode->key.i;
+
+            my_stack.push(new_node);
         }
 
         Node* pop()
         {
-            Node* pNode = nullptr;
-            //...
+            Node* pNode = my_stack.top();
+            
+            my_stack.pop();
+
             return pNode;
         }
     };
@@ -158,10 +215,16 @@ namespace AI
 
         void run(Key key, int color)
         {
-            UNUSED(key)
-            UNUSED(color)
-
             // Implement the flood fill
+            std::vector<AI::Node*> adjacents = this->pGetAdjacents->operator()(key);
+
+            GetMapAdjacents* map_adj = static_cast<GetMapAdjacents*>(pGetAdjacents);
+
+            for (AI::Node* i : adjacents)
+            {
+                map_adj->setValue(i->key, color);
+                this->run(i->key, color);
+            }
         }
     };
 
@@ -181,10 +244,23 @@ namespace AI
 
         void run(Key key, int color)
         {
-            UNUSED(key)
-            UNUSED(color)
-
             // Implement the flood fill
+            this->openlist.clear();
+            this->openlist.push(new Node(key));
+
+            while (!this->openlist.empty())//check not empty
+            {
+                Node* current = this->openlist.pop();
+                std::vector<AI::Node*> adjacents = this->pGetAdjacents->operator()(current->key);
+
+                GetMapAdjacents* map_adj = static_cast<GetMapAdjacents*>(pGetAdjacents);
+
+                for (Node* i : adjacents)
+                {
+                    map_adj->setValue(i->key, color);
+                    this->openlist.push(i);
+                }
+            }
         }
     };
 
