@@ -1,0 +1,2 @@
+C:\Users\zanph\Documents\GitHub\AI-assignments\a3\x64\Debug\app.exe
+C:\Users\zanph\Documents\GitHub\AI-assignments\a3\x64\Debug\app.pdb

@@ -41,8 +41,22 @@ namespace AI
         // Serialization
         friend std::ostream& operator<<(std::ostream& os, Node const& rhs)
         {
-            os << rhs.value; // just for test purpose
-            // ...
+            std::string temp{ "" };
+            temp += rhs.value;
+            temp += " {";    //  "a{"
+
+            temp += std::to_string(rhs.children.size()) + " "; //"a{0 "
+
+            for (Node* child : rhs.children)
+            {
+                std::ostringstream getChild;
+                getChild << *child;
+
+                temp += getChild.str();
+            }
+
+            temp += "} ";    //"a{0 }"
+            os << temp;
 
             return os;
         }
@@ -50,8 +64,61 @@ namespace AI
         // Deserialization
         friend std::istream& operator>>(std::istream& is, Node& rhs)
         {
-            is >> rhs.value; // just for test purpose
-            // ...
+            std::istreambuf_iterator<char> item;
+            std::string input(std::istreambuf_iterator<char>(is), item);    //retrieving input string
+
+            size_t n = input.find_first_of(' ');    //find space
+            if (n == std::string::npos) return is;//if space not found return
+
+            rhs.value = input.substr(0, n); //get substr (first object)
+
+            input = input.substr(n + 1, std::string::npos); //get remaining string
+
+            if (input[0] != '{') return is; //if no more child, return
+
+            input = input.substr(1, std::string::npos); //splice {
+
+            n = input.find(' '); //find next space
+            if (n == std::string::npos) return is;//if space not found return
+
+            int len = stoi(input.substr(0, n)); //get length of substr remaining
+
+            if (isnan(static_cast<float>(len)))  return is; //if number not found, return
+
+            input = input.substr(n + 1, std::string::npos);
+
+            for (int i{ 0 }; i < len; ++i)  //loop for each child
+            {
+                Node<std::string>* child = new Node();
+                child->parent = &rhs;
+
+                std::istringstream current{ input };
+                current >> *child;
+
+                rhs.children.emplace_back(child);
+
+                size_t noc = input.find_first_of("1234567890");
+                int num = stoi(input.substr(noc, 1));
+
+                if (num > 0)
+                {
+                    size_t temp = num + 1;
+                    size_t x = 0;
+                    while (temp > 0)
+                    {
+                        x = input.find('}', x + 1);
+                        temp--;
+                    }
+
+                    input = input.substr(x + 2, std::string::npos);
+                }
+                else
+                {
+                    n = input.find('}');
+                    if (n == std::string::npos) return is;//if } not found return
+                    input = input.substr(n + 2, std::string::npos);
+                }
+            }
 
             return is;
         }
@@ -59,8 +126,25 @@ namespace AI
         // Returns values from root to this node as an array
         std::vector<T> getPath() const
         {
-            std::vector<T> r;
-            // ...
+            std::vector<T> r = std::vector<T>();
+
+            // if (this == nullptr)
+            // {
+            //     return r;
+            // }
+
+            r.insert(r.begin(), this->value);
+
+            Node<T>* node = this->parent;
+
+            while (node)
+            {
+                r.insert(r.begin(), node->value);
+
+                //std::cout << "parent value: " << node->parent->value << "\n";
+
+                node = node->parent;
+            }
 
             return r;
         }
