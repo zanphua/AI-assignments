@@ -1,12 +1,26 @@
+/*!*****************************************************************************
+\file functions.h
+\author Zandra Phua Si-Yu
+\par DP email: p.siyuzandra@digipen.edu
+\par Course: CSD3182
+\par Section: B
+\par Assignment 3 (Tree Flood Fill)
+\date 26-05-2021
+\brief
+This file has declarations and definitions that are required for submission
+*******************************************************************************/
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
 #include <iostream>
+#include <sstream>
 #include <vector>
 #include <list>
 #include <stack>
 #include <string>
 #include <algorithm>
+#include <random>
+#include <queue>
 
 #include "data.h"
 
@@ -38,7 +52,13 @@ namespace AI
                 delete child;
         }
 
-        // Serialization
+        /*!*****************************************************************************
+        \brief Friend function for Serialization
+        \param std::ostream& os, output stream
+        \param Node const& rhs, Node object
+
+        \return std::ostream&
+        *******************************************************************************/
         friend std::ostream& operator<<(std::ostream& os, Node const& rhs)
         {
             std::string temp{ "" };
@@ -61,7 +81,13 @@ namespace AI
             return os;
         }
 
-        // Deserialization
+        /*!*****************************************************************************
+        \brief Friend function for Deserialization
+        \param std::istream& is, input stream
+        \param Node& rhs, Node object
+
+        \return std::istream&
+        *******************************************************************************/
         friend std::istream& operator>>(std::istream& is, Node& rhs)
         {
             std::istreambuf_iterator<char> item;
@@ -83,7 +109,7 @@ namespace AI
 
             int len = stoi(input.substr(0, n)); //get length of substr remaining
 
-            if (isnan(static_cast<float>(len)))  return is; //if number not found, return
+            if (std::isnan(static_cast<float>(len)))  return is; //if number not found, return
 
             input = input.substr(n + 1, std::string::npos);
 
@@ -123,15 +149,13 @@ namespace AI
             return is;
         }
 
-        // Returns values from root to this node as an array
+        /*!*****************************************************************************
+       /Brief   Returns values from root to this node as an array
+       /returns std::vector<T>, Vector of path to this node
+       *******************************************************************************/
         std::vector<T> getPath() const
         {
             std::vector<T> r = std::vector<T>();
-
-            // if (this == nullptr)
-            // {
-            //     return r;
-            // }
 
             r.insert(r.begin(), this->value);
 
@@ -140,8 +164,6 @@ namespace AI
             while (node)
             {
                 r.insert(r.begin(), node->value);
-
-                //std::cout << "parent value: " << node->parent->value << "\n";
 
                 node = node->parent;
             }
@@ -180,14 +202,28 @@ namespace AI
         {
         }
 
+        void setValue(TreeNode* pNode, std::string val)
+        {
+            pNode->value = val;
+        }
+
         std::vector<TreeNode*> operator()(TreeNode* pNode)
         {
-           UNUSED(pNode)
-
             std::vector<AI::TreeNode*> list = {};
 
-            // Push to the list all children of pNode excluding 
-            // those with value not equal "x"
+            // Push to the list, all children of pNode  
+            // excluding those with value not equal "x"
+            std::list<TreeNode*>::iterator it;
+
+            for (it = pNode->children.begin(); it != pNode->children.end(); it++)
+            {
+                TreeNode* temp = *it;
+
+                if (temp->value == "x")
+                {
+                    list.emplace_back(temp);
+                }
+            }           
 
             return list;
         }
@@ -205,11 +241,12 @@ namespace AI
 
         std::vector<TreeNode*> operator()(TreeNode* pNode)
         {
-            UNUSED(pNode)
+            // Use the base class operator()
+            std::vector<TreeNode*> adjacents = GetTreeAdjacents::operator()(pNode);
 
-            std::vector<TreeNode*> adjacents;
-
-            // Use the base class operator() and then shuffle the result
+            //shuffle the result
+            auto rng = std::default_random_engine{};
+            std::shuffle(adjacents.begin(), adjacents.end(), rng);
 
             return adjacents;
         }
@@ -219,6 +256,8 @@ namespace AI
 
     struct Interface
     {
+        virtual bool empty() = 0;
+
         virtual void clear() = 0;
 
         virtual void push(TreeNode* pNode) = 0;
@@ -228,42 +267,82 @@ namespace AI
 
     struct Queue : Interface //...
     {
+        std::queue<TreeNode*> my_queue;
+
+        bool empty()
+        {
+            if (my_queue.empty())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         void clear()
         {
-            //...
+            while (!my_queue.empty())
+            {
+                my_queue.pop();
+            }
         }
 
         void push(TreeNode* pNode)
         {
-           UNUSED(pNode)
-           //...
+            TreeNode* new_node = new TreeNode;
+            new_node->value = pNode->value;
+            new_node->children = pNode->children;
+
+            my_queue.push(new_node);
         }
 
         TreeNode* pop()
         {
-            TreeNode* pNode = nullptr;
-            //...
+            TreeNode* pNode = my_queue.front();
+
+            my_queue.pop();
+
             return pNode;
         }
     };
 
     struct Stack : Interface //...
     {
+        std::stack<TreeNode*> my_stack{};
+
+        bool empty()
+        {
+            if (my_stack.empty())
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         void clear()
         {
-            //...
+            while (!my_stack.empty())
+            {
+                my_stack.pop();
+            }
         }
 
         void push(TreeNode* pNode)
         {
-            UNUSED(pNode)
-            //...
+            TreeNode* new_node = new TreeNode;
+            new_node->value = pNode->value;
+            new_node->children = pNode->children;
+
+            my_stack.push(new_node);
         }
 
         TreeNode* pop()
         {
-            TreeNode* pNode = nullptr;
-            //...
+            TreeNode* pNode = my_stack.top();
+
+            my_stack.pop();
+
             return pNode;
         }
     };
@@ -281,10 +360,16 @@ namespace AI
 
         void run(TreeNode* pNode, std::string value)
         {
-            UNUSED(pNode)
-            UNUSED(value)
-
             // Implement the flood fill
+            std::vector<TreeNode*> adjacents = this->pGetAdjacents->operator()(pNode);
+
+            GetTreeAdjacents* Tree_adj = static_cast<GetTreeAdjacents*>(pGetAdjacents);
+
+            for (TreeNode* i : adjacents)
+            {
+                Tree_adj->setValue(i, value);
+                this->run(i, value);
+            }
         }
     };
 
@@ -304,10 +389,24 @@ namespace AI
 
         void run(TreeNode* pNode, std::string value)
         {
-            UNUSED(pNode)
-            UNUSED(value)
-
             // Implement the flood fill
+            this->openlist.clear(); //clear current list
+            this->openlist.push(pNode); //push root node
+
+            while (!this->openlist.empty())//check not empty
+            {
+                TreeNode* current = this->openlist.pop();   //get node
+                std::vector<TreeNode*> adjacents = this->pGetAdjacents->operator()(current);   //find all adjacent nodes
+
+                GetTreeAdjacents* Tree_adj = static_cast<GetTreeAdjacents*>(pGetAdjacents);
+
+                for (TreeNode* i : adjacents)
+                {
+                    //std::cout << "value: " << value << "\n";
+                    Tree_adj->setValue(i, value);
+                    this->openlist.push(i);
+                }
+            }
          }
     };
 
