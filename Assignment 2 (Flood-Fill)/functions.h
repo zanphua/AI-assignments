@@ -224,6 +224,7 @@ namespace AI
             {
                 map_adj->setValue(i->key, color);
                 this->run(i->key, color);
+                delete i;
             }
         }
     };
@@ -260,6 +261,8 @@ namespace AI
                     map_adj->setValue(i->key, color);
                     this->openlist.push(i);
                 }
+
+                delete current;
             }
         }
     };
