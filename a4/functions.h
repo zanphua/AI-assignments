@@ -1,3 +1,14 @@
+/*!*****************************************************************************
+\file functions.h
+\author Zandra Phua Si-Yu
+\par DP email: p.siyuzandra@digipen.edu
+\par Course: CSD3182
+\par Section: B
+\par Assignment 4 (Dijkstra's Search)
+\date 01-06-2021
+\brief
+This file has declarations and definitions that are required for submission
+*******************************************************************************/
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
@@ -20,6 +31,11 @@ namespace AI
         GetMapAdjacents(int* map = nullptr, int size = 0)
             : GetAdjacents(), map{ map }, size{ size }
         {
+        }
+
+        int getMapSize()
+        {
+            return this->size;
         }
 
         std::vector<AI::Node*> operator()(Key key)
@@ -75,6 +91,17 @@ namespace AI
                 closedlist->add(pCurrent->key, pCurrent);
 
                 if (pCurrent->key == target) break;
+
+                //static cast to get map size
+                GetMapAdjacents* gma = static_cast<GetMapAdjacents*>(pGetAdjacents);
+
+                int size = gma->getMapSize();
+
+                //if target is out of the map size
+                if (target[0] > size || target[1] > size)
+                {
+                    break;
+                }
 
                 std::vector<AI::Node*> adjacents = pGetAdjacents->operator()(pCurrent->key);
 
