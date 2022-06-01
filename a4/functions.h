@@ -2,6 +2,7 @@
 #define FUNCTIONS_H
 
 #include "data.h"
+#include <algorithm>
 
 #define UNUSED(x) (void)x;
 
@@ -23,8 +24,6 @@ namespace AI
 
         std::vector<AI::Node*> operator()(Key key)
         {
-            //UNUSED(key)
-
             std::vector<AI::Node*> list = {};
 
             // Find and return all empty adjacent cells
@@ -46,14 +45,6 @@ namespace AI
             return list;
         }
     };
-
-    // Base class with interfaces for Dijkstra's and AStar search
-   /* class Pathfinder
-    {
-        Pathfinder(GetAdjacents* pGetAdjacents, )
-
-        std::vector<char>run(Key starting, Key target)
-    };*/
 
     class Dijkstras
     {
@@ -77,14 +68,8 @@ namespace AI
             // Implement the search
             openlist.push(new Node(starting));
 
-            while (true)
+            while (!openlist.empty())
             {
-                if (openlist.empty())
-                {
-                    pCurrent = nullptr;
-                    break;
-                }
-
                 pCurrent = openlist.pop();
 
                 closedlist->add(pCurrent->key, pCurrent);
@@ -137,8 +122,8 @@ namespace AI
                 pNode = pNode->parent;
             }
 
-            std::reverse(a.begin(), a.end());
             a.pop_back();
+            std::reverse(a.begin(), a.end());
 
             return a;
         }
